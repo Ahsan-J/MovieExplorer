@@ -8,6 +8,7 @@ import MovieListItem from '../components/Movie/MovieListItem';
 import { moderateScale } from 'react-native-size-matters';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { INavigationRootList } from '../model/navigation';
+import { apiCall, IApiParam } from '../helper/api';
 
 const Movie: React.FC = () => {
     const [meta, setMeta] = useState<{ total: number, page: number }>({
@@ -25,22 +26,24 @@ const Movie: React.FC = () => {
         refetch,
         isFetching,
     } = useInfiniteQuery([`MovieList`, Config.BASE_URL, Config.API_KEY, route.params?.search], async ({ pageParam }) => {
-        const searchString = new URLSearchParams({
-            s: route.params?.search || '',
-            type: "movie",
-            apikey: Config.API_KEY,
-            page: pageParam || 1,
-        })
 
-        const response = await fetch(`${Config.BASE_URL}?${searchString}`, {
-            method: "GET",
-        })
-        const responseData: {Search: Array<IMovieListItem>, totalResults: string} = await response.json();
+        const params: IApiParam = {
+            params: {
+                s: route.params?.search || '',
+                type: "movie",
+                apikey: Config.API_KEY,
+                page: pageParam || 1,
+            },
+        }
+
+        const response: {Search: Array<IMovieListItem>, totalResults: string} = await apiCall(params);
+
         setMeta({
             page: parseInt(pageParam, 10) + 1,
-            total: parseInt(responseData.totalResults, 10),
+            total: parseInt(response.totalResults, 10),
         })
-        return responseData.Search;
+
+        return response.Search;
     }, {
         getNextPageParam: () => {
             if (meta?.page < meta?.total) return meta?.page + 1

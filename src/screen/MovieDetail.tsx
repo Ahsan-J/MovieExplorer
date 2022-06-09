@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image';
 import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 import { getDeviceWidth } from '../helper/size';
 import Icon from '../components/Icon';
+import { apiCall, IApiParam } from '../helper/api';
 
 const MovieDetail: React.FC = () => {
     const styles = useStyles();
@@ -17,18 +18,14 @@ const MovieDetail: React.FC = () => {
 
     const {
         data,
-    } = useQuery([`MovieItem_${route.params?.movieId}`, Config.BASE_URL, Config.API_KEY, route.params?.movieId], async () => {
-        const searchString = new URLSearchParams({
-            i: route.params?.movieId || '',
-            apikey: Config.API_KEY,
-        })
+    } = useQuery<IMovie>([`MovieItem_${route.params?.movieId}`, Config.BASE_URL, Config.API_KEY, route.params?.movieId], async () => {
+        const params: IApiParam = {
+            params: {
+                i: route.params?.movieId || '',
+            },
+        }
 
-        const response = await fetch(`${Config.BASE_URL}?${searchString}`, {
-            method: "GET",
-        })
-
-        const responseData: IMovie = await response.json();
-        return responseData;
+        return await apiCall(params);
     })
 
     return (
