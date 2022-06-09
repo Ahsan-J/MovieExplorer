@@ -1,27 +1,16 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
-  ActivityIndicator,
   SafeAreaView,
-  StatusBar,
   StyleSheet,
-  useColorScheme,
-  View,
 } from 'react-native';
+import AppNavigator from './Navigation';
 
 const App = () => {
-  const isDarkMode = useColorScheme() == "dark";
   const styles = useStyles();
-  const [loader, setLoader] = useState<boolean>(false);
 
   return (
-  <SafeAreaView style={styles.safeAreaContainer}>
-      <StatusBar barStyle={!isDarkMode ? "dark-content" : 'light-content'} />
-      {loader ? (
-        <View style={styles.screen}>
-          <ActivityIndicator size="large" />
-        </View>
-      ) : null}
-      {/* AppNavigator */}
+    <SafeAreaView style={styles.safeAreaContainer}>
+      <AppNavigator />
     </SafeAreaView>
   );
 };
